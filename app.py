@@ -32,14 +32,18 @@ def get_prediction(image_bytes):
     return imagenet_class_index[predicted_idx]
 
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['get', 'POST'])
 def predict():
     if request.method == 'POST':
         file = request.files['file']
-        img_bytes = file.read()
-        class_id, class_name = get_prediction(image_bytes=img_bytes)
-        return jsonify({'class_id': class_id, 'class_name': class_name})
+    else:
+        img_file = request.args.get("path")
+        file = open(img_file, 'rb')
+    img_bytes = file.read()
+    class_id, class_name = get_prediction(image_bytes=img_bytes)
+    return jsonify({'class_id': class_id, 'class_name': class_name})
 
 
 if __name__ == '__main__':
-    app.run()
+    # app.run()
+    app.run(host='0.0.0.0', port=5005)
